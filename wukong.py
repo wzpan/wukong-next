@@ -1,19 +1,30 @@
 from snowboy import snowboydecoder
+from subprocess import call
 import sys
 import signal
+import os
 
 interrupted = False
+
+
+def audioRecorderCallback(fname):
+    print("converting audio to text")
+    call(['play', fname])
+    #os.remove(fname)
+
+
+
+def detectedCallback():
+  print('recording audio...', end='', flush=True)
 
 def signal_handler(signal, frame):
     global interrupted
     interrupted = True
 
+
 def interrupt_callback():
     global interrupted
     return interrupted
-
-def my_detected_callback():
-    print("我在")
 
 if len(sys.argv) == 1:
     print("Error: need to specify model name")
@@ -22,13 +33,16 @@ if len(sys.argv) == 1:
 
 model = sys.argv[1]
 
+# capture SIGINT signal, e.g., Ctrl+C
 signal.signal(signal.SIGINT, signal_handler)
 
-detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5)
+detector = snowboydecoder.HotwordDetector(model, sensitivity=0.38)
 print('Listening... Press Ctrl+C to exit')
 
-detector.start(detected_callback=my_detected_callback,
+# main loop
+detector.start(detected_callback=detectedCallback,
+               audio_recorder_callback=audioRecorderCallback,
                interrupt_check=interrupt_callback,
-               sleep_time=0.03)
+               sleep_time=0.01)
 
 detector.terminate()
