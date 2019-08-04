@@ -1,6 +1,7 @@
 import subprocess
 import threading
 import os
+from robot import utils
 
 def play(src, delete=False):
     foo, ext = os.path.splitext(src)
@@ -16,14 +17,26 @@ class AbstractPlayer(threading.Thread):
 
 class SoxPlayer(AbstractPlayer):
 
+    def __init__(self):
+        super(SoxPlayer, self).__init__()
+        self.playing = False
+
     def run(self):
         cmd = ['play', self.src]
-        subprocess.run(cmd)
+        self.proc = subprocess.Popen(cmd)
+        self.playing = True
+        self.proc.wait()
+        self.playing = False
         if self.delete:
-            if os.path.exists(self.src):
-                os.remove(self.src)
+            utils.check_and_delete(self.src)
 
     def play(self, src, delete=False):
         self.src = src
         self.delete = delete
         self.start()
+
+    def stop(self):
+        if self.proc and self.playing:
+            self.proc.terminate()
+            if self.delete:
+                utils.check_and_delete(self.src)

@@ -7,13 +7,18 @@ import os
 
 
 interrupted = False
-
+player = None
 
 def audioRecorderCallback(fname):
+    global player
     Player.play('static/beep_lo.wav', False)
-    Player.play(fname, True)
+    player = Player.SoxPlayer()
+    player.play(fname, True)
 
 def detectedCallback():
+    global player
+    if player:
+        player.stop()
     Player.play('static/beep_hi.wav', False)
 
 def signal_handler(signal, frame):
