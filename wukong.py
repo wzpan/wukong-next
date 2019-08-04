@@ -1,21 +1,20 @@
 from snowboy import snowboydecoder
 from subprocess import call
+from robot import Player
 import sys
 import signal
 import os
+
 
 interrupted = False
 
 
 def audioRecorderCallback(fname):
-    print("converting audio to text")
-    call(['play', fname])
-    #os.remove(fname)
-
-
+    Player.play('static/beep_lo.wav', False)
+    Player.play(fname, True)
 
 def detectedCallback():
-  print('recording audio...', end='', flush=True)
+    Player.play('static/beep_hi.wav', False)
 
 def signal_handler(signal, frame):
     global interrupted
