@@ -18,7 +18,7 @@ class SoxPlayer(AbstractPlayer):
 
     def run(self):
         cmd = ['play', self.src]
-        subprocess.call(cmd)
+        subprocess.run(cmd)
         if self.delete:
             if os.path.exists(self.src):
                 os.remove(self.src)
