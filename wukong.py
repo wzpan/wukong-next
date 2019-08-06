@@ -1,6 +1,6 @@
 from snowboy import snowboydecoder
 from subprocess import call
-from robot import Player
+from robot import Player, ASR
 import sys
 import signal
 import os
@@ -12,8 +12,7 @@ player = None
 def audioRecorderCallback(fname):
     global player
     Player.play('static/beep_lo.wav', False)
-    player = Player.SoxPlayer()
-    player.play(fname, True)
+    print(ASR.transcribe(fname))
 
 def detectedCallback():
     global player
